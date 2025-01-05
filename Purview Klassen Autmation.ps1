@@ -110,22 +110,17 @@ Connect-AipService
 $policyNameGF = "Richtlinie Geschäftsführung"
 $policyDescriptionGF = "Diese Richtlinie stellt sicher, dass die Geschäftsführung alle Labels nutzen kann."
 
-New-AipServicePolicy `
-           -Name $policyNameGF `
-           -Description $policyDescriptionGF `
-           -Labels "Öffentlich, Intern, Vertraulich, Streng Vertraulich" `
-           -DefaultLabelId "Öffentlich" `
-           -ScopeId "GF" `
-           -Mandatory $true
+New-LabelPolicy `
+       -Name $policyNameGF  `
+       -Labels "Öffentlich", "Intern", "Vertraulich", "Streng Vertraulich" `
+       -ModernGroupLocation "GF"
 
 # Veröffentlichungsrichtlinie für die Gruppe Mitarbeiter erstellen
 $policyNameMitarbeiter = "Richtlinie Mitarbeiter"
-$policyDescriptionMitarbeiter = "Diese Richtlinie stellt sicher, dass Mitarbeiter nur eingeschränkte Labels nutzen können."
 
-New-AipServicePolicy `
+New-LabelPolicy `
        -Name $policyNameMitarbeiter `
-       -Description $policyDescriptionMitarbeiter `
-       -Labels "Öffentlich, Intern" `
-       -DefaultLabelId "Öffentlich" `
-       -ScopeId "Mitarbeiter" `
-       -Mandatory $true
+       -Labels "Öffentlich", "Intern" `
+       -ModernGroupLocation "All"
+
+
