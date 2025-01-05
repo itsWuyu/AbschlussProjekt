@@ -93,18 +93,32 @@ foreach ($label in $labels) {
         -ApplyContentMarkingFooterText $label.ContentMarkingText `
         -ContentType "File, Email"
 }
-
-
-# Labelrichtlinien erstellen
-$allLabels = $labels.Name
-$restrictedLabels = @("Vertraulich", "Streng Vertraulich")
-$publicLabels = $allLabels | Where-Object { $_ -notin $restrictedLabels }
-
-# Richtlinie für alle Benutzer
-New-LabelPolicy -Name "Allgemeine Richtlinie" -Labels $publicLabels -ModernGroupLocation "All Company"
-
-# Richtlinie für Geschäftsleitung
-New-LabelPolicy -Name "Geschäftsleitung Richtlinie" -Labels $allLabels -ModernGroupLocation "GF"
-
 # Verbindung beenden
 Disconnect-ExchangeOnline -Confirm:$false
+
+# Verbindung zu Azure Information Protection herstellen
+Connect-AipService
+
+# Veröffentlichungsrichtlinie für die Gruppe GF erstellen
+$policyNameGF = "Richtlinie Geschäftsführung"
+$policyDescriptionGF = "Diese Richtlinie stellt sicher, dass die Geschäftsführung alle Labels nutzen kann."
+
+New-AipServicePolicy `
+    -Name $policyNameGF `
+    -Description $policyDescriptionGF `
+    -Labels "Öffentlich, Intern, Vertraulich, Streng Vertraulich" `
+    -DefaultLabelId "Öffentlich" `
+    -ScopeId "GF" `
+    -Mandatory $true
+
+# Veröffentlichungsrichtlinie für die Gruppe Mitarbeiter erstellen
+$policyNameMitarbeiter = "Richtlinie Mitarbeiter"
+$policyDescriptionMitarbeiter = "Diese Richtlinie stellt sicher, dass Mitarbeiter nur eingeschränkte Labels nutzen können."
+
+New-AipServicePolicy `
+    -Name $policyNameMitarbeiter `
+    -Description $policyDescriptionMitarbeiter `
+    -Labels "Öffentlich, Intern" `
+    -DefaultLabelId "Öffentlich" `
+    -ScopeId "Mitarbeiter" `
+    -Mandatory $true
