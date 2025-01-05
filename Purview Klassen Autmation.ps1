@@ -68,30 +68,37 @@ Connect-IPPSSession
 
 $FirmenName = "Firma Contoso"
 
-# Labels erstellen
+
+    # Labels erstellen
 $labels = @(
-    @{Name="Öffentlich"; Tooltip="Für öffentlich zugängliche Informationen"; Description="Dieses Label ist für Daten vorgesehen, die öffentlich geteilt werden können."; ContentMarkingText=""; EncryptionEnabled=$false},
-    @{Name="Intern"; Tooltip="Nur für interne Nutzung"; Description="Dieses Label ist für Daten vorgesehen, die innerhalb des Unternehmens bleiben sollen."; ContentMarkingText=""; EncryptionEnabled=$false},
-    @{Name="Vertraulich"; Tooltip="Vertrauliche Informationen"; Description="Dieses Label schützt vertrauliche Daten."; ContentMarkingText="Vertraulich - $FirmenName"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7 },
-    @{Name="Streng Vertraulich"; Tooltip="Hochsensible Informationen"; Description="Dieses Label schützt hochsensible Daten und wendet erweiterte Verschlüsselung an."; ContentMarkingText="Streng Vertraulich - $FirmenName"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7}
+	@{Name="Öffentlich"; Tooltip="Für öffentlich zugängliche Informationen"; Description="Dieses Label ist für Daten vorgesehen, die öffentlich geteilt werden können."; ContentMarkingText=""; EncryptionEnabled=$false},
+        @{Name="Intern"; Tooltip="Nur für interne Nutzung"; Description="Dieses Label ist für Daten vorgesehen, die innerhalb des Unternehmens bleiben sollen."; ContentMarkingText=""; EncryptionEnabled=$false},
+        @{Name="Vertraulich"; Tooltip="Vertrauliche Informationen"; Description="Dieses Label schützt vertrauliche Daten."; ContentMarkingText="Vertraulich - $FirmenName"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7 },
+        @{Name="Streng Vertraulich"; Tooltip="Hochsensible Informationen"; Description="Dieses Label schützt hochsensible Daten und wendet erweiterte Verschlüsselung an."; ContentMarkingText="Streng Vertraulich - $FirmenName"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7}
 )
 
-# Labels durchlaufen und erstellen
+    # Labels durchlaufen und erstellen
 foreach ($label in $labels) {
-    New-Label `
-        -Name $label.Name `
-        -DisplayName $label.Name `
-        -Tooltip $label.Tooltip `
-        -Comment $label.Description `
-        -EncryptionEnabled $label.EncryptionEnabled `
-	-EncryptionPromptUser $true
-	-EncryptionOfflineAccessDays $label.EncryptionOfflineAccessDays `
-        -ContentMarkingText $label.ContentMarkingText `
-        -ApplyContentMarkingFooterAlignment "Center" `
-        -ApplyContentMarkingFooterEnabled $true `
-        -ApplyContentMarkingFooterFontSize 10 `
-        -ApplyContentMarkingFooterText $label.ContentMarkingText `
-        -ContentType "File, Email"
+        $labelParams = @{
+        Name = $label.Name
+        DisplayName = $label.Name
+        Tooltip = $label.Tooltip
+        Comment = $label.Description
+        EncryptionEnabled = $label.EncryptionEnabled
+        EncryptionPromptUser = $true
+        ContentMarkingText = $label.ContentMarkingText
+        ApplyContentMarkingFooterAlignment = "Center"
+        ApplyContentMarkingFooterEnabled = $true
+        ApplyContentMarkingFooterFontSize = 10
+        ApplyContentMarkingFooterText = $label.ContentMarkingText
+        ContentType = "File, Email"
+}
+
+if ($label.EncryptionEnabled) {
+        $labelParams.EncryptionOfflineAccessDays = $label.EncryptionOfflineAccessDays
+}
+
+New-Label @labelParams
 }
 # Verbindung beenden
 Disconnect-ExchangeOnline -Confirm:$false
@@ -104,21 +111,21 @@ $policyNameGF = "Richtlinie Geschäftsführung"
 $policyDescriptionGF = "Diese Richtlinie stellt sicher, dass die Geschäftsführung alle Labels nutzen kann."
 
 New-AipServicePolicy `
-    -Name $policyNameGF `
-    -Description $policyDescriptionGF `
-    -Labels "Öffentlich, Intern, Vertraulich, Streng Vertraulich" `
-    -DefaultLabelId "Öffentlich" `
-    -ScopeId "GF" `
-    -Mandatory $true
+           -Name $policyNameGF `
+           -Description $policyDescriptionGF `
+           -Labels "Öffentlich, Intern, Vertraulich, Streng Vertraulich" `
+           -DefaultLabelId "Öffentlich" `
+           -ScopeId "GF" `
+           -Mandatory $true
 
 # Veröffentlichungsrichtlinie für die Gruppe Mitarbeiter erstellen
 $policyNameMitarbeiter = "Richtlinie Mitarbeiter"
 $policyDescriptionMitarbeiter = "Diese Richtlinie stellt sicher, dass Mitarbeiter nur eingeschränkte Labels nutzen können."
 
 New-AipServicePolicy `
-    -Name $policyNameMitarbeiter `
-    -Description $policyDescriptionMitarbeiter `
-    -Labels "Öffentlich, Intern" `
-    -DefaultLabelId "Öffentlich" `
-    -ScopeId "Mitarbeiter" `
-    -Mandatory $true
+       -Name $policyNameMitarbeiter `
+       -Description $policyDescriptionMitarbeiter `
+       -Labels "Öffentlich, Intern" `
+       -DefaultLabelId "Öffentlich" `
+       -ScopeId "Mitarbeiter" `
+       -Mandatory $true
