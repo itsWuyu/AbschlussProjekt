@@ -71,10 +71,10 @@ $FirmenName = "Firma Contoso"
 
     # Labels erstellen
 $labels = @(
-	@{Name="Öffentlich"; Tooltip="Für öffentlich zugängliche Informationen"; Description="Dieses Label ist für Daten vorgesehen, die öffentlich geteilt werden können."; ContentMarkingText=""; EncryptionEnabled=$false},
-        @{Name="Intern"; Tooltip="Nur für interne Nutzung"; Description="Dieses Label ist für Daten vorgesehen, die innerhalb des Unternehmens bleiben sollen."; ContentMarkingText=""; EncryptionEnabled=$false},
-        @{Name="Vertraulich"; Tooltip="Vertrauliche Informationen"; Description="Dieses Label schützt vertrauliche Daten."; ContentMarkingText="Vertraulich - $FirmenName"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7 },
-        @{Name="Streng Vertraulich"; Tooltip="Hochsensible Informationen"; Description="Dieses Label schützt hochsensible Daten und wendet erweiterte Verschlüsselung an."; ContentMarkingText="Streng Vertraulich - $FirmenName"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7}
+	@{Name="Öffentlich"; Tooltip="Für öffentlich zugängliche Informationen"; Description="Dieses Label ist für Daten vorgesehen, die öffentlich geteilt werden können."; Color="#34d631";ContentMarkingText=""; EncryptionEnabled=$false},
+        @{Name="Intern"; Tooltip="Nur für interne Nutzung"; Description="Dieses Label ist für Daten vorgesehen, die innerhalb des Unternehmens bleiben sollen."; Color="#0717f2"; ContentMarkingText=""; EncryptionEnabled=$false},
+        @{Name="Vertraulich"; Tooltip="Vertrauliche Informationen"; Description="Dieses Label schützt vertrauliche Daten."; ContentMarkingText="Vertraulich - $FirmenName"; Color="#fca103"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7 },
+        @{Name="Streng Vertraulich"; Tooltip="Hochsensible Informationen"; Description="Dieses Label schützt hochsensible Daten und wendet erweiterte Verschlüsselung an."; Color="#ff0000"; ContentMarkingText="Streng Vertraulich - $FirmenName"; EncryptionEnabled=$true;EncryptionOfflineAccessDays=7}
 )
 
     # Labels durchlaufen und erstellen
@@ -84,6 +84,7 @@ foreach ($label in $labels) {
         DisplayName = $label.Name
         Tooltip = $label.Tooltip
         Comment = $label.Description
+	AdvancedSettings =  $label.Color
         EncryptionEnabled = $label.EncryptionEnabled
         EncryptionPromptUser = $true
         ContentMarkingText = $label.ContentMarkingText
